@@ -1,0 +1,381 @@
+---
+output:
+  pdf_document:
+    df_print: kable
+    includes:
+      in_header: ref.tex
+  html_document:
+    code_folding: show
+    theme:
+      base_font:
+        google: Prompt
+      heading_font:
+        google: Proza Libre
+      version: 3
+fontsize: 12pt
+linestretch: 1.25
+---
+
+<!---Paramètres des chunks--->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, 
+                      eval = TRUE, fig.align = "center")
+```
+
+```{=html}
+<style>
+body {
+font-family: Helvetica;
+font-size: 16px;
+text-align: justify;
+}
+
+h1 {
+font-family: Georgia;
+font-size: 35px;
+color: #06027C;
+font-weight: bold;
+text-align: center;
+}
+
+h2 {
+font-family: Georgia;
+font-size: 25px;
+color: #060189;
+font-weight: bold;
+}
+
+h3 {
+font-family: Georgia;
+font-size: 20px;
+color: #050083;
+font-weight: bold;
+}
+</style>
+```
+
+<!---Page de garde--->
+\thispagestyle{empty}
+
+\begin{center}
+
+République du Sénégal \\
+{\tiny Un peuple - Un But - Une fois} \\
+\includegraphics[width=2.5cm]{..//Documents//SEN.jpg}\\
+***************************\\
+\vspace{\baselineskip}
+Ministère de l'Economie, du Plan et de la Coopération \\
+***************************\\
+\vspace{\baselineskip}
+Agence nationale de la Statistique et de la Démographique \\
+\includegraphics[width=3cm]{..//Documents//logoANSD.jpg}\\
+***************************\\
+\vspace{\baselineskip}
+Ecole nationale de la Statistique et de l'Analyse économique - Pierre NDIAYE \\
+\includegraphics[width=2.5cm]{..//Documents//logoENSAE.png}\\
+***************************\\
+\vspace{\baselineskip}
+\textbf {\huge TP3 - Logiciel statistique R}
+
+
+\end{center}
+
+
+<!---Table des matières--->
+```{=tex}
+\newpage
+\thispagestyle{empty}
+\renewcommand{\contentsname}{Table des matières}
+\tableofcontents
+```
+
+
+<!---Body--->
+\newpage
+
+# I. Importation et pré-traitements des données {.taset}
+## I.1. Importation 
+Afin d'assurer un travail de qualité, il est essentiel d'importer les données nécessaires à notre étude. Pour ce faire, nous utiliserons la librairie readr qui offre la fonction read_csv, conçue spécifiquement pour lire les bases de données au format CSV. Pour garantir une manipulation fluide des données par la suite, nous remplacerons les valeurs manquantes (NA) par des valeurs vides. Cette option est spécifiée lors de l'importation des données avec la fonction read_csv().  Les trois dataframes relatives aux données sur le taux de croissance annuel du revenu national par habitant, l'indice d'inégalité entre les sexes et le taux d'accroissement annuel de la population sont affectés respectivement aux objets dfGrowth, dfGindex, dfPopGrowth. Pour avoir un aperçu sur les dataframes, nous pouvons utiliser la fonction head() pour afficher les premières lignes et tail() pour les dernières lignes. Nous nous limiterons à l'affichage des 5 premières et dernières lignes de chacune des bases.
+
+```{r}
+library(readr)
+
+dfGrowth <- read_csv("..//Donnees//annual-growth-in-gni-per-capita.csv")
+# tail(dfGrowth, 5)
+head(dfGrowth, 5)
+
+dfGindex <- read_csv("..//Donnees//gender-inequality-index.csv")
+# tail(dfGindex, 5)
+head(dfGindex, 5)
+
+dfPopGrowth <- read_csv("..//Donnees//population-growth-annual.csv")
+# tail(dfPopGrowth, 5)
+head(dfPopGrowth, 5)
+```
+
+## I.2. Pré-traitement
+Dans cette partie, nous allons de fond en combre explorer les bases de données pour voir la nécissité de faire des traitements avant de passer aux traçages des graphiques.\\
+En affichant certaines observations, nous remarquons que les données sont disposées sous le même format. Elle comporte 8 variables dont les lables sont décrites dans le tableau ci-après:
+
+| **Nom de la variable** | **Description**                 | **Exemples**                   |
+|:----------------|:--------------------------|:---------------------------|
+| Region Name            | Nom du pays                     | Albania,Afghanistan,Algeria... |
+| Region Alpha-3 Code    | Code à 3 lettres du pays        | ALB,AFG,DZA...                 |
+| Region Alpha-2 Code    | Code à 2 lettres du pays        |                                |
+| Start Year (End Year)  | Année de début (année de fin)   | 2002, 2007                     |
+| Value                  | Valeur de l'indicateur          | 0.297, 12.7854                 |
+| Unit                   | Unité de mesure de l'indicateur | en %                           |
+| Source                 | Source de la donnée             | UNDP, World Bank...            |
+
+Les données sur le taux de croissance annuel du revenu national par habitant se présentent sous la forme de 5404 enregistrements distincts. Chaque enregistrement correspond à un pays spécifique pour une année particulière. Cette répétition des pays sur plusieurs lignes est inhérente à la nature temporelle des données, qui couvrent la période allant de 1961 à 2021. Ces données proviennent de la Banque mondiale et fournissent le taux de croissance annuel du revenu national par habitant pour chaque pays et chaque année.
+```{r}
+summary(dfGrowth)
+```
+
+En ce qui concerne les données relatives à l'indice d'inégalité entre les sexes, elles comportent 4889 observations et sont présentées da la même manière que la base ci-dessus. Elles proviennent essentiellement de l' 
+```{r}
+summary(dfGindex)
+```
+
+La dernière base de données renseigne sur les taux de croissance de tous les pays de la période 1961 - 2021. Elle est constitué de 13070 observations et est présentée de manière semblable aux deux autres.
+```{r}
+summary(dfPopGrowth)
+```
+
+
+```{r}
+# library(forcats)
+# fct_unique(dfGrowth[[1]])
+sum(duplicated(dfGrowth))
+```
+
+```{r fonction de sélection, results='hide'}
+update = function(data){
+  # Librarie
+  library(dplyr)
+
+  # renommer les colonnes en termes plus simples
+  data = data |> dplyr::rename(region = `Region Name`,
+                     C3region = `Region Alpha-3 Code`,
+                     year = `End Year`)
+  
+  # Sélection des colonnes nécessaire
+  data = data |> dplyr::select(c("region","C3region","year","Value"))
+  
+  attach(data)
+  # Trier selon l'année et la région
+  df = data[order(year,region),]
+  
+  return(df)
+}
+
+dfGrowth = update(dfGrowth)
+```
+
+```{r fonction pour réduire la base, results='hide'}
+## Cette Fonction permet d'enregistrer la base avec les variables du tracé
+rebase = function(df){
+  # Librairie
+  library(tidyverse) 
+  
+  # Transposer la base en format temporelle
+  df <- df %>% pivot_wider(
+                            names_from = "year",
+                            values_from = "Value")
+  
+  # Index des lignes
+  df  <- df %>% remove_rownames %>%
+    column_to_rownames(var="C3region")
+  
+  # Base de données temporelle ordonnées
+  new_df = df[,order(names(df))]
+  
+  return(df)
+}
+
+## Application
+dfGrowth = rebase(dfGrowth)
+```
+
+```{r}
+## Pays de l'Afrique de l'Ouest
+WAfrica = c("Benin","Burkina Faso","Cabo Verde","Côte d'Ivoire","Gambia", 
+            "Guinea","Guinea-Bissau","Mali","Mauritania","Niger","Nigeria",
+            "Senegal","Sierra Leone","Togo")
+```
+## I.3 Création de nouvelles observations
+```{r Ajouter des observations}
+# Déterminer les valeurs des lignes du monde et de l'Afrique de 
+# l'ouest dans la base de données par lecalcul des moyennes
+lineWorld = colMeans(dfGrowth[-1], na.rm = T)
+lineWAfrica = colMeans((dfGrowth |> filter(region %in% WAfrica))[-1], 
+                       na.rm = T)
+
+# Dimension de la base de données
+n = dim(dfGrowth)[1]
+p = dim(dfGrowth)[2]
+
+# Ajout de la ligne World
+dfGrowth[n+1,1] = "World"
+dfGrowth[n+1,2:p] = lineWorld
+
+# Ajout de la ligne Western Africa
+dfGrowth[n+2,1] = "Western Africa"
+dfGrowth[n+2,2:p] = lineWAfrica
+
+# Définir les pays pour les graphes
+countries = c("Niger", "Western Africa", "World")
+
+# Filtrer selon les pays définis ci-dessus
+dfGrowth = dfGrowth %>% filter(region%in%countries)
+```
+
+```{r Retranformation en format long}
+## Librairie
+library(tidyr)
+
+## Transposer pour avoir le format long
+dfGrowth = gather(dfGrowth,key = "year", value = "Value", -region)
+
+## Convertir la variable year en numérique
+dfGrowth$year = as.numeric(dfGrowth$year)
+
+## Trier selon les années
+dfGrowth <- dfGrowth[order(dfGrowth$year), ]
+
+## Affichage des premières masques
+head(dfGrowth)
+```
+
+# II. Graphiques 
+```{r}
+library(ggplot2)
+library(ggthemes)
+
+ggplot(dfGrowth, mapping = aes(x = year, y = Value, col = region)) +
+  # Ajout de la courbe et des points
+  geom_line(size = 0.8, show.legend = F) + theme_bw() + 
+  geom_point() + 
+  scale_x_continuous(n.breaks = 6) + 
+  labs(
+    title = "Figure : Income growth and distribution (Gini Index)",
+    x = "", y = "", caption = "Source : World bank", colour = "",) +
+  # Ajout d'un thème format excel
+  theme_excel_new() + 
+  # Changer les couleurs
+  scale_color_manual(values = c("#8A8AFF","#858585","#D5D5D5")) + 
+  theme(
+    panel.grid.major.y = element_line(linetype = 'dashed', 
+                                      size = 0.4, color = "#C0C0C0"),
+    panel.grid.major.x = element_line(linetype = 'solid', 
+                                      size = 0.4, color = "#C0C0C0"),
+    plot.title = element_text(hjust=0, size = 10, 
+                              color = "#0F4761", face = "italic"),
+    plot.caption = element_text(hjust=0, size = 8, color = "black"),
+    legend.position = 'top', legend.justification = 'left',
+  ) 
+```
+Le traçage des deux autres graphiques se fait de manière analogue. Nous créons donc une fonction gérant à la fois le traitement ainsi que le tracé.
+
+```{r}
+TP2_graph <- function(df, titre, source, display_box = F){
+  
+  ## Librairies
+  library(tidyverse)
+  library(tidyr)
+  library(ggplot2)
+  library(ggthemes)
+  
+  ## Pays de l'Afrique de l'Ouest
+  WAfrica = c("Benin","Burkina Faso","Cabo Verde","Côte d'Ivoire","Gambia", 
+          "Guinea","Guinea-Bissau","Mali","Mauritania","Niger","Nigeria",
+          "Senegal","Sierra Leone","Togo")
+  
+  ## Zones géographiques pour le tracé des graphes
+  countries = c("Niger", "Western Africa", "World")
+
+  ## Transformer la base avec la fonction update
+  df = update(df)
+  
+  ## Reconstruire la base
+  df = rebase(df)
+  
+  ## Ajout des statistiques moyennes dans le monde
+  lineWorld = colMeans(df[-1], na.rm = T)
+  df[dim(df)[1]+1,1] = "World"
+  df[dim(df)[1],2:dim(df)[2]] = lineWorld
+
+  ## Ajout des statistiques moyennes dans l'Afrique de l'Ouest
+  lineWAfrica = colMeans((df |> filter(region %in% WAfrica))[-1], na.rm = T)
+  df[dim(df)[1]+1,1] = "Western Africa"
+  df[dim(df)[1],2:dim(df)[2]] = lineWAfrica
+
+  ## Filtrer les zones pour les courbes
+  new_df = df %>% filter(region%in%countries)
+  
+  ## Transformation de la base en format long
+  new_df = gather(new_df,key = "year", value = "Value", -region)
+  
+  ## Convertir la variable année en numérique
+  new_df$year = as.numeric(new_df$year)
+  
+  ## Trier selon l'année
+  new_df <- new_df[order(new_df$year), ]
+  
+  ## Courbes
+  plot <- ggplot(new_df, mapping = aes(x = year, y = Value, col = region)) +
+  geom_line(size = 0.8, show.legend = F) + theme_bw() + geom_point() + 
+  scale_x_continuous(n.breaks = 6) + 
+  labs(
+    title = paste("Figure : ",titre),
+    x = "", y = "", caption = paste("Source : ",source), colour = "",
+  ) + theme_excel_new() + 
+    scale_color_manual(values = c("#8A8AFF","#858585","#D5D5D5")) +
+  theme(
+    panel.grid.major.y = element_line(linetype = 'dashed', 
+                                      size = 0.4, color = "#C0C0C0"),
+    panel.grid.major.x = element_line(linetype = 'solid',
+                                      size = 0.4, color = "#C0C0C0"),
+    plot.title = element_text(hjust=0, size = 10, 
+                              color = "#0F4761", face = "italic"),
+    plot.caption = element_text(hjust=0, size = 8, color = "black"),
+    legend.position = 'top', legend.justification = 'left'
+  )
+  
+  ## Ajout de la bulle narrative
+  if (display_box == T){
+    label_data <- data.frame(
+      x = 2002,
+      y = 0.4,
+      label = "World: "
+    )
+    plot = plot + 
+      geom_rect(aes(xmin = 2002 - 2, xmax = 2002 + 2,
+                    ymin = 0.4 + 0.07, ymax = 0.4 + 0.1),
+            fill = "#D5D5D5", color = NA, shadow = 2,
+            alpha = 0.8, show.legend = F) +
+      geom_text(data = label_data,
+            aes(label = paste(label,0.4), x = x, y = y+0.085),
+            size = 4, colour = "black") +
+      annotate("polygon",
+         x = c(2002 - 0.3, 2002 + 0.3, 2002),
+         y = c(0.4 + 0.07, 0.4 + 0.07, 0.4 + 0.05),
+         fill = "#D5D5D5",
+         alpha = 0.8)
+  }
+  return(plot)
+}
+```
+
+```{r}
+TP2_graph(dfPopGrowth,titre="Annual population growth (%)",
+          source="World Bank")
+```
+
+```{r}
+TP2_graph(dfGindex,titre="Gender index inequality",
+          source="UNDP", display_box = T)
+```
+
+

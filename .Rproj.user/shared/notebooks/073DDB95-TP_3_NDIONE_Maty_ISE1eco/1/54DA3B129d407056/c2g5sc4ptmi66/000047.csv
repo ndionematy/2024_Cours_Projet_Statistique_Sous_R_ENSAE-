@@ -1,0 +1,13 @@
+"0",""
+"0","dfGindex <- read_csv(""..//Donnees//gender-inequality-index.csv"")"
+"2","[1mRows: [22m[34m4889[39m [1mColumns: [22m[34m8[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (4): Region Name, Region Alpha-3 Code, Region Alpha-2 Code, Source
+[32mdbl[39m (3): Start Year, End Year, Value
+[33mlgl[39m (1): Unit"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","# tail(dfGindex, 5)"
+"0","head(dfGindex, 5)"

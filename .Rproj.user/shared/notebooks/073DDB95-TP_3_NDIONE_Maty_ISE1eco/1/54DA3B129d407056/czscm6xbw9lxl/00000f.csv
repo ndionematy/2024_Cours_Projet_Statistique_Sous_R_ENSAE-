@@ -1,0 +1,91 @@
+"0","update = function(data){"
+"0","  library(dplyr)"
+"0",""
+"0","  data = data |> dplyr::rename(region = `Region Name`,"
+"0","                     C3region = `Region Alpha-3 Code`,"
+"0","                     year = `End Year`)"
+"0","  "
+"0","  data = data |> dplyr::select(c(""region"",""C3region"",""year"",""Value""))"
+"0","  "
+"0","  attach(data)"
+"0","  df = data[order(year,region),]"
+"0","  "
+"0","  return(df)"
+"0","}"
+"0",""
+"0","dfGrowth = update(dfGrowth)"
+"2","Les objets suivants sont masqués depuis data (pos = 3):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 4):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 5):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 6):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 7):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 8):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 9):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 10):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 11):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 12):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 13):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 14):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 22):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 23):
+
+    C3region, region, Value, year
+
+"
+"2","Les objets suivants sont masqués depuis data (pos = 24):
+
+    C3region, region, Value, year
+
+"

@@ -1,0 +1,8 @@
+"0","## Retranformation en format long"
+"0","library(tidyr)"
+"0",""
+"0","dfGrowth = gather(dfGrowth,key = ""year"", value = ""Value"", -region)"
+"0","dfGrowth$year = as.numeric(dfGrowth$year)"
+"0","dfGrowth <- dfGrowth[order(dfGrowth$year), ]"
+"0",""
+"0","head(dfGrowth)"

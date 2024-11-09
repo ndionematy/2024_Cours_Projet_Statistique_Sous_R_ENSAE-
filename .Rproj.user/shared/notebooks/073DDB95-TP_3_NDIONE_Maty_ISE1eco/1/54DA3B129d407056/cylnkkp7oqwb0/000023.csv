@@ -1,0 +1,7 @@
+"0","## Pays de l'Afrique de l'Ouest"
+"0","WAfrica = c(""Benin"",""Burkina Faso"",""Cabo Verde"",""Côte d'Ivoire"",""Gambia"", "
+"0","            ""Guinea"",""Guinea-Bissau"",""Mali"",""Mauritania"",""Niger"",""Nigeria"","
+"0","            ""Senegal"",""Sierra Leone"",""Togo"")"
+"0",""
+"0","## Statistiques moyennes dans le monde"
+"0","dfGrowth[,names(dfGrowth)!=""region""] |> summarise_all(mean, na.rm = TRUE)"

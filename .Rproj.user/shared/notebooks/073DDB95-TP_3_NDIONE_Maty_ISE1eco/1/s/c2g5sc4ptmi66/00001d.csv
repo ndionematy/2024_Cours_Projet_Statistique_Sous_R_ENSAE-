@@ -1,0 +1,4 @@
+"0",""
+"0","dfGindex <- read_csv(""..//Donnees//gender-inequality-index.csv"")"
+"0","# tail(dfGindex, 5)"
+"0","head(dfGindex, 5)"

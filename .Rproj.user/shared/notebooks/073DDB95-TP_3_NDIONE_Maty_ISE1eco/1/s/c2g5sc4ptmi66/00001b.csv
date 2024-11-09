@@ -1,0 +1,5 @@
+"0","library(readr)"
+"0",""
+"0","dfGrowth <- read_csv(""..//Donnees//annual-growth-in-gni-per-capita.csv"")"
+"0","# tail(dfGrowth, 5)"
+"0","head(dfGrowth, 5)"
